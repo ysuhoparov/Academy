@@ -1,0 +1,153 @@
+#include <iostream>
+#include <iomanip>      // std::get_time
+#include <string>
+#include <ctime>
+//#include <windows.h>
+
+
+//Команда play запрашивает у пользователя название записи для воспроизведения и начинает её воспроизведение.
+// Воспроизведение симулируется с помощью вывода в консоль всей информации о записи.Если произведение
+// какой - то записи уже начато, ничего не происходит.
+//Команда pause.Ставит запись на паузу, о чём выводит соответствующее сообщение в консоль.Если запись
+// уже на паузе или не воспроизводится вовсе, ничего не происходит.
+//Команда next переходит к следующей записи для воспроизведения.Запись при этом выбирается случайно,
+// как будто плеер работает в режиме shuffle.
+//Команда stop прекращает воспроизведение текущей записи, если таковая имеется.Об этом выводится сообщение
+// в консоль.Два раза остановить воспроизведение невозможно, так что команда должна срабатывать только в первом случае.
+//Команда exit — выход из программы.
+
+class Track {
+public:
+    int id;
+    std::string name;
+
+    std::tm duration;
+
+};
+
+class Player {
+    static const int N = 8;
+
+public:
+    int currentTrackId;
+    int status;   // 0 - ready; 1- play, 2- pause
+    Track t[N]={0};  // упрощение
+
+    int numberOfTracks() {
+        return N;
+    }
+
+    void setTracks(std::string tname) {
+        t[currentTrackId].name =  tname;
+        t[currentTrackId].duration.tm_sec = 30 + rand() % 30;
+        t[currentTrackId].duration.tm_min = rand() % 3;
+        t[currentTrackId].id = currentTrackId;
+        currentTrackId++;
+        currentTrackId %= N;
+    }
+
+    void play(int i) {
+        if (status != 1) {
+            status = 1;
+            currentTrackId = i;
+            std::cout << "Playing a track : " << t[i].name;
+            std::cout << " " << std::put_time(&t[i].duration, "%M:%S")<< "\n";
+        }
+    }
+
+    void next() {;
+        if (status==1){
+            status =0;
+            int i = (currentTrackId + 1+ rand()% N-1)%N;
+            play(i);
+        }
+    }
+
+    void pause() {
+        if (status == 1) {
+            status = 2;
+            std::cout << "Paused track : " << t[currentTrackId].name << " ";
+            std::cout << " "  << std::put_time(&t[currentTrackId].duration, "%M:%S")<< "\n";
+        }
+    }
+
+    void stop() {
+        if (status !=0) {
+            status = 0;
+            std::cout << "Stopped track : " << t[currentTrackId].name << " ";
+            std::cout << " "  << std::put_time(&t[currentTrackId].duration, "%M:%S")<< "\n";
+        }
+    }
+
+};
+
+
+int main() {
+
+    system("chcp 1251");
+
+    Player p;
+    p.currentTrackId = 0;
+    p.status = 0;
+    std::string comm, sname;
+    int fl=0;
+
+    const char* song[]{
+            "Medlyq",
+            "Rock",
+            "Hip",
+            "Rap",
+            "Dance",
+            "Tango",
+            "Blues",
+            "Smouk"
+    };
+
+    srand(time(0));
+
+    for (auto s : song) p.setTracks(s);
+
+    for (auto s : p.t)
+        std::cout << s.id << " " << s.name << "  " << std::put_time(&s.duration, "%M:%S") << "\n";
+
+    do {
+        std::cout << "Command: ";
+        std::cin >> comm;
+
+        if (comm == "play") {
+            if (p.status == 2)
+                p.play(p.currentTrackId);
+            else
+                do {
+                    std::cout << "Track name: ";
+                    std::cin >> sname;
+                    fl = 1;
+                    for (auto s: p.t)
+                        if (s.name == sname) {
+                            p.play(s.id);
+                            fl = 0;
+                            break;
+                        }
+                    if (fl) {
+                        std::cout << "wrong song\n";
+                        continue;
+                    }
+                } while (fl);
+        }
+
+        if (comm == "next") {
+                p.next();
+        }
+
+        if (comm == "pause") {
+                p.pause();
+        }
+
+        if (comm == "stop") {
+                p.stop();
+        }
+        std::cout<< p.status << "\n";
+    } while (comm != "exit");
+
+
+}
