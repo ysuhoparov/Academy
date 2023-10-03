@@ -1,0 +1,115 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class Marks {
+public:
+    std::string name;
+    int smark = 12;
+};
+
+class Person {
+protected:
+    std::string name;
+    int age;
+
+public:
+
+    void setAge(int age) {
+        if (age < 5) age = 5;
+        if (age > 100)  age = 100;
+        this->age = age;
+    }
+
+    void setName(std::string name) {
+        this->name = name;
+    }
+
+    Person(std::string name, int age) {
+        setAge(age);
+        setName(name);
+    }
+
+    int getAge() {
+        return age;
+    }
+    std::string getName() {
+        return name;
+    }
+
+};
+
+// определение класса Студент
+class Student : public Person {
+
+    std::string group;
+    int course;
+    vector<Marks> marks;         // оценки
+    Marks lmark;
+
+public:
+
+    int getNumMarks() {
+        return marks.size();
+    }
+    void setMarks(int i, int mark, string disc) {
+        if (mark > 12 || mark < 0)
+            mark = 0;
+        lmark.smark = mark;
+        lmark.name = disc;
+        marks.push_back(lmark);
+    }
+
+    void setGroup(std::string group) {
+        this->group = group;
+    };
+    void setCourse(int course) {
+        if (course < 1) course = 1;
+        if (course > 6)  course = 6;
+        this->course = course;
+    };
+
+    Student(std::string name, int age, std::string group, int course) : Person(name, age) {
+        setGroup(group);
+        setCourse(course);
+    }
+
+    int getMarks(int i) {
+        return marks[i].smark;
+    }
+
+    string getDisc(int i) {
+        return marks[i].name;
+    }
+
+    std::string getGroup() {
+        return group;
+    }
+};
+
+int main()
+{
+    setlocale(0, "rus");
+
+    // определение объекта
+    Student st = Student("Петров А.И", 25, "BV112", 2);
+
+    const char* disciplines[4] = {
+        "C++ basics",
+        "UML",
+        "Literature",
+        "Windows"
+    };
+
+    for (int i = 0; i < 4; ++i)
+        st.setMarks(i, 10 + i % 3, disciplines[i]);
+
+    // получение значений объекта;
+    cout << "Успеваемость студента: " << st.getName()<<", группа: "<< st.getGroup() << endl;
+    for (int i = 0; i < st.getNumMarks(); ++i)
+        cout << st.getDisc(i) << " : " << st.getMarks(i) << endl;
+
+    return 0;
+}
