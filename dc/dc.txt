@@ -1,0 +1,222 @@
+
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
+#include <fstream>
+
+// base abstract class
+class Animal  {
+protected:
+    // shared data field
+    int id;
+    std::string name;
+    int age;
+
+public:
+    int flat;
+
+    Animal(std::string _name) {
+        name = _name;
+    }
+
+    Animal(int id, int flat, std::string name, int age) {
+        this->id = id;
+        this->name = name;
+        this->age = age;
+        this->flat = flat;
+    }
+
+    // для удаления виртуальных классов
+    virtual ~Animal() {}
+
+    void setAge(int _age) {
+        if (_age < 20)
+            age = _age;
+        else age = 20;
+    }
+
+    int getAge() {
+        return age;
+    }
+
+    // голос
+    virtual void voice() {};
+
+};
+
+
+class Dog : public Animal {
+public:
+    // constructor
+    Dog(std::string name) : Animal(name) {}
+    Dog(int id, int flat, std::string name, int age) : Animal(id, flat, name, age) {}
+
+    // here we implement 
+    void voice() override    {
+        std::cout << name << "\tGaff!" << std::endl;
+    }
+
+};
+
+class Cat : public Animal {
+public:
+    Cat(std::string name) : Animal(name) {}
+    Cat(int id, int flat, std::string name, int age) : Animal(id, flat, name, age) {}
+
+    void voice() override     {
+        std::cout << name << "\tMow!" << std::endl;
+    }
+
+};
+
+
+int main() {
+
+    using namespace std;
+    setlocale(LC_ALL, "Ru");
+
+    int id, flat, age;
+    string name;
+    vector <Cat> cat;
+    vector <Dog> dog;
+
+    string buffer[] {   "1 24 Мурка 3",
+                        "2 22 Васька 2",
+                        "3 28 Макс 1",
+                        "4 14 Алекс 4",
+                        "5 16 Тигр 2",
+                        "6 34 Мурзик 1",
+                        "7 46 Оникс 3",
+                        "8 18 Пушок 2",
+                        "9 22 Базик 1"
+                };
+
+    for (int i = 0; i < 9; i++) {
+        stringstream buffer_stream(buffer[i]);
+        buffer_stream >> id >> flat >> name >> age;
+
+        cout << id << flat << name << age << endl;
+        cat.push_back (Cat(id, flat, name, age));
+    }
+
+    ifstream  textFile;
+    textFile.open("outfile2.txt");
+
+    cout << "\n";
+
+    while (!textFile.eof()) {
+        textFile >> id >> flat >> name >> age;
+        if (!textFile.eof()) {
+            cout << id << " " << flat << name << age << endl;
+            dog.push_back(Dog(id, flat, name, age));
+        }
+    }
+    textFile.close();
+
+    cout << "\n";
+    for (int i = 0; i < cat.size(); i++) 
+        cat[i].voice();
+
+    cout << "\n";
+    for (int i = 0; i < dog.size(); i++)
+        dog[i].voice();
+
+    //cout << cat[2].getAge() << endl;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// base abstract class
+class Animal  {
+protected:
+    // shared data field
+    string name;
+    int age;
+
+
+public:
+    Animal(string _name) {
+        name = _name;
+    }
+
+    // для удаления виртуальных классов
+    virtual ~Animal() {}
+
+    void setAge(int _age) {
+        if (_age < 20)
+            age = _age;
+    }
+
+    int getAge() {
+        return age;
+    }
+
+    // голос
+    virtual void voice() {};
+
+};
+
+
+class Dog : public Animal {
+public:
+    // constructor
+    Dog(string name) : Animal(name) {}
+
+    // here we implement 
+    void voice() override    {
+        cout << name << "  Gaff!" << endl;
+    }
+
+};
+
+class Cat : public Animal {
+public:
+    Cat(string name) : Animal(name) {}
+
+    void voice() override     {
+        cout << name << "  Mow!" << endl;
+    }
+
+};
+
+
+int main()
+{
+    Cat cat = Cat("Basil");
+    Dog dog = Dog("Rex");
+    cat.voice();
+    dog.voice();
+
+    dog.setAge(6);
+
+    cout << dog.getAge() << endl;
+
+    return 0;
+}
